@@ -17,7 +17,10 @@ import {
 } from '@heroicons/react/24/solid';
 
 export default function FavoritesPage() {
-  const { data, loading, error } = useQuery<{ getUserFavorites: Restaurant[] }>(GET_USER_FAVORITES);
+  const { data, loading, error } = useQuery<{ getUserFavorites: Restaurant[] }>(GET_USER_FAVORITES, {
+    fetchPolicy: 'cache-and-network',
+    notifyOnNetworkStatusChange: true,
+  });
 
   const favorites: Restaurant[] = data?.getUserFavorites || [];
 

@@ -6,7 +6,8 @@ import { useQuery, useMutation } from '@apollo/client/react';
 import { GET_RESTAURANT_BY_ID } from '@/graphql/queries/restaurants';
 import { GET_MENU_BY_RESTAURANT } from '@/graphql/queries/menu';
 import { GET_REVIEWS_BY_RESTAURANT } from '@/graphql/queries/reviews';
-import { ADD_FAVORITE_RESTAURANT, ADD_REVIEW } from '@/graphql/mutations/user';
+import { ADD_FAVORITE_RESTAURANT, REMOVE_FAVORITE_RESTAURANT, ADD_REVIEW } from '@/graphql/mutations/user';
+import { GET_USER_FAVORITES } from '@/graphql/queries/user';
 import { useAuthStore } from '@/store/auth-store';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -67,8 +68,21 @@ export default function RestaurantDetailPage() {
     }
   );
 
-  const [addFavorite, { loading: favoriteLoading }] = useMutation(ADD_FAVORITE_RESTAURANT);
+  const [addFavorite, { loading: favoriteLoading }] = useMutation(ADD_FAVORITE_RESTAURANT, {
+    refetchQueries: [{ query: GET_USER_FAVORITES }],
+    awaitRefetchQueries: true,
+  });
+  const [removeFavorite, { loading: removeFavoriteLoading }] = useMutation(REMOVE_FAVORITE_RESTAURANT, {
+    refetchQueries: [{ query: GET_USER_FAVORITES }],
+    awaitRefetchQueries: true,
+  });
   const [addReview, { loading: reviewLoading }] = useMutation(ADD_REVIEW);
+
+  // Check if restaurant is in favorites
+  const { data: favoritesData } = useQuery<{ getUserFavorites: Restaurant[] }>(GET_USER_FAVORITES, {
+    skip: !isAuthenticated,
+    fetchPolicy: 'cache-and-network',
+  });
 
   const {
     register,
@@ -84,18 +98,25 @@ export default function RestaurantDetailPage() {
   const restaurant = restaurantData?.getRestaurantById;
   const menuItems = menuData?.getMenuByRestaurant || [];
   const reviews = reviewsData?.getReviewsByRestaurant || [];
+  const favorites = favoritesData?.getUserFavorites || [];
+  const isFavorite = favorites.some((fav) => fav.id === restaurantId);
 
-  const handleAddFavorite = async () => {
+  const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
-      toast.error('Please login to add favorites');
+      toast.error('Please login to manage favorites');
       return;
     }
 
     try {
-      await addFavorite({ variables: { restaurantId } });
-      toast.success('Added to favorites!');
+      if (isFavorite) {
+        await removeFavorite({ variables: { restaurantId } });
+        toast.success('Removed from favorites!');
+      } else {
+        await addFavorite({ variables: { restaurantId } });
+        toast.success('Added to favorites!');
+      }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to add favorite');
+      toast.error(error instanceof Error ? error.message : 'Failed to update favorites');
     }
   };
 
@@ -213,12 +234,21 @@ export default function RestaurantDetailPage() {
             </div>
             {isAuthenticated && (
               <Button
-                variant="primary"
-                onClick={handleAddFavorite}
-                isLoading={favoriteLoading}
+                variant={isFavorite ? 'outline' : 'primary'}
+                onClick={handleToggleFavorite}
+                isLoading={favoriteLoading || removeFavoriteLoading}
               >
-                <HeartIcon className="h-5 w-5 mr-2" />
-                Add to Favorites
+                {isFavorite ? (
+                  <>
+                    <HeartIcon className="h-5 w-5 mr-2 fill-red-500" />
+                    Remove from Favorites
+                  </>
+                ) : (
+                  <>
+                    <HeartIcon className="h-5 w-5 mr-2" />
+                    Add to Favorites
+                  </>
+                )}
               </Button>
             )}
           </div>
