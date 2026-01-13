@@ -19,6 +19,17 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Restaurant, Menu, Review } from '@/types';
+import {
+  StarIcon,
+  HeartIcon,
+  MapPinIcon,
+  PhoneIcon,
+  ClockIcon,
+  UsersIcon,
+  CurrencyDollarIcon,
+  MapIcon,
+} from '@heroicons/react/24/solid';
+import { HeartIcon as HeartOutlineIcon } from '@heroicons/react/24/outline';
 
 const reviewSchema = z.object({
   rating: z.number().min(1).max(5),
@@ -143,11 +154,15 @@ export default function RestaurantDetailPage() {
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{restaurant.name}</h1>
-                <p className="text-gray-600">{restaurant.cuisineType} • {restaurant.address}</p>
+                <p className="text-gray-600 flex items-center gap-2">
+                  <MapPinIcon className="h-5 w-5" />
+                  {restaurant.cuisineType} • {restaurant.address}
+                </p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600 mb-1">
-                  {restaurant.rating.average.toFixed(1)} ⭐
+                <div className="text-2xl font-bold text-blue-600 mb-1 flex items-center justify-end gap-1">
+                  <StarIcon className="h-6 w-6" />
+                  {restaurant.rating.average.toFixed(1)}
                 </div>
                 <div className="text-sm text-gray-500">
                   {restaurant.rating.count} reviews
@@ -156,14 +171,16 @@ export default function RestaurantDetailPage() {
             </div>
             <p className="text-gray-700 mb-4">{restaurant.description}</p>
             <div className="flex flex-wrap gap-4 mb-4">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${restaurant.crowdLevel === 'LOW' ? 'bg-green-100 text-green-800' :
+              <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 ${restaurant.crowdLevel === 'LOW' ? 'bg-green-100 text-green-800' :
                   restaurant.crowdLevel === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
                     'bg-red-100 text-red-800'
                 }`}>
+                <UsersIcon className="h-4 w-4" />
                 {restaurant.crowdLevel} Crowd
               </span>
               {restaurant.crowdData && (
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 flex items-center gap-1">
+                  <UsersIcon className="h-4 w-4" />
                   {restaurant.crowdData.currentVisitors} visitors
                 </span>
               )}
@@ -174,6 +191,7 @@ export default function RestaurantDetailPage() {
                 onClick={handleAddFavorite}
                 isLoading={favoriteLoading}
               >
+                <HeartIcon className="h-5 w-5 mr-2" />
                 Add to Favorites
               </Button>
             )}

@@ -8,6 +8,15 @@ import Skeleton from '@/components/ui/Skeleton';
 import Link from 'next/link';
 import Image from 'next/image';
 import { RestaurantStats, Analytics, CrowdTrend } from '@/types';
+import {
+  ShieldCheckIcon,
+  BuildingStorefrontIcon,
+  UsersIcon,
+  StarIcon,
+  ChartBarIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+} from '@heroicons/react/24/solid';
 
 export default function AdminDashboardPage() {
   const { data, loading, error } = useQuery<{ getAnalytics: Analytics }>(GET_ANALYTICS);
@@ -18,7 +27,10 @@ export default function AdminDashboardPage() {
     <ProtectedRoute requireAuth requireAdmin>
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">Admin Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-2">
+            <ShieldCheckIcon className="h-8 w-8 text-blue-600" />
+            Admin Dashboard
+          </h1>
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -41,19 +53,28 @@ export default function AdminDashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <Card>
                   <div className="p-6">
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Total Restaurants</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium text-gray-500">Total Restaurants</h3>
+                      <BuildingStorefrontIcon className="h-6 w-6 text-blue-600" />
+                    </div>
                     <p className="text-3xl font-bold text-gray-900">{analytics?.totalRestaurants || 0}</p>
                   </div>
                 </Card>
                 <Card>
                   <div className="p-6">
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Total Users</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium text-gray-500">Total Users</h3>
+                      <UsersIcon className="h-6 w-6 text-green-600" />
+                    </div>
                     <p className="text-3xl font-bold text-gray-900">{analytics?.totalUsers || 0}</p>
                   </div>
                 </Card>
                 <Card>
                   <div className="p-6">
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Average Rating</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium text-gray-500">Average Rating</h3>
+                      <StarIcon className="h-6 w-6 text-yellow-500" />
+                    </div>
                     <p className="text-3xl font-bold text-gray-900">
                       {analytics?.averageRatings?.toFixed(1) || '0.0'}
                     </p>
@@ -61,7 +82,10 @@ export default function AdminDashboardPage() {
                 </Card>
                 <Card>
                   <div className="p-6">
-                    <h3 className="text-sm font-medium text-gray-500 mb-2">Most Visited</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium text-gray-500">Most Visited</h3>
+                      <ChartBarIcon className="h-6 w-6 text-purple-600" />
+                    </div>
                     <p className="text-3xl font-bold text-gray-900">
                       {analytics?.mostVisitedRestaurants?.length || 0}
                     </p>
@@ -73,18 +97,23 @@ export default function AdminDashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <Link href="/admin/restaurants">
                   <Card hover className="p-6 text-center">
+                    <BuildingStorefrontIcon className="h-12 w-12 text-blue-600 mx-auto mb-3" />
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Manage Restaurants</h3>
                     <p className="text-gray-600">Create, update, or delete restaurants</p>
                   </Card>
                 </Link>
                 <Link href="/admin/menus">
                   <Card hover className="p-6 text-center">
+                    <svg className="h-12 w-12 text-green-600 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Manage Menus</h3>
                     <p className="text-gray-600">Add or edit menu items</p>
                   </Card>
                 </Link>
                 <Link href="/admin/crowd">
                   <Card hover className="p-6 text-center">
+                    <UsersIcon className="h-12 w-12 text-purple-600 mx-auto mb-3" />
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">Crowd Management</h3>
                     <p className="text-gray-600">Update crowd data</p>
                   </Card>

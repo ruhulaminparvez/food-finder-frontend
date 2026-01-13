@@ -8,6 +8,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ProtectedRoute from '@/components/common/ProtectedRoute';
 import { Restaurant } from '@/types';
+import {
+  HeartIcon,
+  StarIcon,
+  UsersIcon,
+  MapPinIcon,
+  BuildingStorefrontIcon,
+} from '@heroicons/react/24/solid';
 
 export default function FavoritesPage() {
   const { data, loading, error } = useQuery<{ getUserFavorites: Restaurant[] }>(GET_USER_FAVORITES);
@@ -18,7 +25,10 @@ export default function FavoritesPage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 mb-8">My Favorites</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-2">
+            <HeartIcon className="h-8 w-8 text-red-500" />
+            My Favorites
+          </h1>
 
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

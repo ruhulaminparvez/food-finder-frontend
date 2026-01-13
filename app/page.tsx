@@ -11,6 +11,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Restaurant } from '@/types';
 import { motion } from 'framer-motion';
+import {
+  MagnifyingGlassIcon,
+  MapPinIcon,
+  StarIcon,
+  UsersIcon,
+  ArrowRightIcon,
+  BuildingStorefrontIcon,
+} from '@heroicons/react/24/solid';
 
 export default function Home() {
   const router = useRouter();
@@ -62,21 +70,28 @@ export default function Home() {
             onSubmit={handleSearch}
             className="bg-white rounded-lg shadow-xl p-4 md:p-6 flex flex-col md:flex-row gap-4"
           >
-            <input
-              type="text"
-              placeholder="Search for cuisine, restaurant name..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <input
-              type="text"
-              placeholder="Location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            <div className="flex-1 relative">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search for cuisine, restaurant name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex-1 relative">
+              <MapPinIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
             <Button type="submit" variant="primary" size="lg" className="w-full md:w-auto">
+              <MagnifyingGlassIcon className="h-5 w-5 mr-2" />
               Search
             </Button>
           </motion.form>
@@ -126,8 +141,9 @@ export default function Home() {
                         fill
                         className="object-cover"
                       />
-                      <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded text-sm font-semibold text-blue-600">
-                        {restaurant.rating.average.toFixed(1)} ⭐
+                      <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded text-sm font-semibold text-blue-600 flex items-center gap-1">
+                        <StarIcon className="h-4 w-4" />
+                        {restaurant.rating.average.toFixed(1)}
                       </div>
                     </div>
                     <div className="p-4">
@@ -138,12 +154,16 @@ export default function Home() {
                         {restaurant.description}
                       </p>
                       <div className="flex items-center justify-between mt-4">
-                        <span className="text-sm text-gray-500">{restaurant.cuisineType}</span>
-                        <span className={`text-xs px-2 py-1 rounded ${
+                        <span className="text-sm text-gray-500 flex items-center gap-1">
+                          <BuildingStorefrontIcon className="h-4 w-4" />
+                          {restaurant.cuisineType}
+                        </span>
+                        <span className={`text-xs px-2 py-1 rounded flex items-center gap-1 ${
                           restaurant.crowdLevel === 'LOW' ? 'bg-green-100 text-green-800' :
                           restaurant.crowdLevel === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-red-100 text-red-800'
                         }`}>
+                          <UsersIcon className="h-3 w-3" />
                           {restaurant.crowdLevel} Crowd
                         </span>
                       </div>
@@ -166,6 +186,7 @@ export default function Home() {
           <Link href="/register">
             <Button variant="secondary" size="lg">
               Get Started
+              <ArrowRightIcon className="h-5 w-5 ml-2" />
             </Button>
           </Link>
         </div>

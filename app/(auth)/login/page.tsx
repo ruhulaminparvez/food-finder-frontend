@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@apollo/client/react';
 import { useForm } from 'react-hook-form';
@@ -12,6 +11,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
+import { AuthPayload } from '@/types';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -23,7 +23,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const { setAuth } = useAuthStore();
-  const [loginUser, { loading }] = useMutation(LOGIN_USER);
+  const [loginUser, { loading }] = useMutation<{ loginUser: AuthPayload }>(LOGIN_USER);
 
   const {
     register,
@@ -44,8 +44,8 @@ export default function LoginPage() {
         toast.success('Login successful!');
         router.push('/dashboard');
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Login failed. Please try again.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Login failed. Please try again.');
     }
   };
 
@@ -87,7 +87,7 @@ export default function LoginPage() {
               variant="primary"
               size="lg"
               isLoading={loading}
-              className="w-full"
+              className="w-full cursor-pointer"
             >
               Sign in
             </Button>

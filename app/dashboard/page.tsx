@@ -9,6 +9,13 @@ import Image from 'next/image';
 import ProtectedRoute from '@/components/common/ProtectedRoute';
 import { RecommendationResult } from '@/types';
 import Button from '@/components/ui/Button';
+import {
+  SparklesIcon,
+  ArrowPathIcon,
+  StarIcon,
+  UsersIcon,
+  MapPinIcon,
+} from '@heroicons/react/24/solid';
 
 export default function DashboardPage() {
   const { data, loading, error, refetch } = useQuery<{ getUserRecommendations: RecommendationResult[] }>(GET_USER_RECOMMENDATIONS, {
@@ -23,7 +30,8 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <SparklesIcon className="h-8 w-8 text-blue-600" />
                 Personalized Recommendations
               </h1>
               <p className="text-gray-600">
@@ -31,6 +39,7 @@ export default function DashboardPage() {
               </p>
             </div>
             <Button onClick={() => refetch()} variant="outline">
+              <ArrowPathIcon className="h-5 w-5 mr-2" />
               Refresh
             </Button>
           </div>

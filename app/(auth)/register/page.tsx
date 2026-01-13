@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation } from '@apollo/client/react';
 import { useForm } from 'react-hook-form';
@@ -12,6 +11,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
+import { AuthPayload } from '@/types';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -28,7 +28,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const router = useRouter();
   const { setAuth } = useAuthStore();
-  const [registerUser, { loading }] = useMutation(REGISTER_USER);
+  const [registerUser, { loading }] = useMutation<{ registerUser: AuthPayload }>(REGISTER_USER);
 
   const {
     register,
@@ -55,8 +55,8 @@ export default function RegisterPage() {
         toast.success('Registration successful!');
         router.push('/dashboard');
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Registration failed. Please try again.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Registration failed. Please try again.');
     }
   };
 
@@ -112,7 +112,7 @@ export default function RegisterPage() {
               variant="primary"
               size="lg"
               isLoading={loading}
-              className="w-full"
+              className="w-full cursor-pointer"
             >
               Sign up
             </Button>
