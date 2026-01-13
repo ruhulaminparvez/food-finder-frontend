@@ -9,6 +9,7 @@ import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
+import Image from 'next/image';
 import { toast } from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,6 +25,7 @@ const restaurantSchema = z.object({
   address: z.string().min(5, 'Address is required'),
   lat: z.number(),
   lng: z.number(),
+  imageUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
 });
 
 type RestaurantFormData = z.infer<typeof restaurantSchema>;
@@ -74,7 +76,7 @@ export default function AdminRestaurantsPage() {
           { day: 'Saturday', open: '09:00', close: '22:00', isClosed: false },
           { day: 'Sunday', open: '09:00', close: '22:00', isClosed: false },
         ],
-        images: [],
+        images: data.imageUrl && data.imageUrl.trim() ? [data.imageUrl.trim()] : [],
       };
 
       if (editingId) {
@@ -87,6 +89,7 @@ export default function AdminRestaurantsPage() {
               cuisineType: input.cuisineType,
               address: input.address,
               location: input.location,
+              images: input.images,
             },
           },
         });
@@ -171,6 +174,29 @@ export default function AdminRestaurantsPage() {
                     {...register('address')}
                     error={errors.address?.message}
                   />
+                  <div>
+                    <Input
+                      label="Image URL"
+                      type="url"
+                      placeholder="https://example.com/restaurant-image.jpg"
+                      {...register('imageUrl')}
+                      error={errors.imageUrl?.message}
+                    />
+                    {watch('imageUrl') && watch('imageUrl')?.trim() && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-600 mb-2">Image Preview:</p>
+                        <div className="relative w-full h-48 border border-gray-300 rounded-lg overflow-hidden bg-gray-100">
+                          <Image
+                            src={watch('imageUrl') || ''}
+                            alt="Restaurant preview"
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
                     <Input
                       label="Latitude"
@@ -244,6 +270,7 @@ export default function AdminRestaurantsPage() {
                             address: restaurant.address,
                             lat: restaurant.location.lat,
                             lng: restaurant.location.lng,
+                            imageUrl: restaurant.images && restaurant.images.length > 0 ? restaurant.images[0] : '',
                           });
                         }}
                       >
