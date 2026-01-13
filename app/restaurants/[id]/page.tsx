@@ -28,6 +28,7 @@ import {
   ArrowLeftIcon,
 } from '@heroicons/react/24/solid';
 import Link from 'next/link';
+import RestaurantMap from '@/components/map/RestaurantMap';
 
 const reviewSchema = z.object({
   rating: z.number().min(1).max(5),
@@ -39,8 +40,8 @@ type ReviewFormData = z.infer<typeof reviewSchema>;
 export default function RestaurantDetailPage() {
   const params = useParams();
   const restaurantId = params.id as string;
-  const { isAuthenticated } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<'menu' | 'reviews'>('menu');
+  const { isAuthenticated, user } = useAuthStore();
+  const [activeTab, setActiveTab] = useState<'menu' | 'reviews' | 'map'>('menu');
 
   const { data: restaurantData, loading: restaurantLoading, error: restaurantError } = useQuery<{ getRestaurantById: Restaurant }>(
     GET_RESTAURANT_BY_ID,
@@ -105,6 +106,10 @@ export default function RestaurantDetailPage() {
     }
 
     try {
+      // Check if user already has a review for this restaurant
+      const userReview = reviews.find((review) => review.user?.id === user?.id);
+      const isUpdating = !!userReview;
+
       await addReview({
         variables: {
           input: {
@@ -114,11 +119,11 @@ export default function RestaurantDetailPage() {
           },
         },
       });
-      toast.success('Review added!');
+      toast.success(isUpdating ? 'Review updated!' : 'Review added!');
       reset();
       refetchReviews();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to add review');
+      toast.error(error instanceof Error ? error.message : 'Failed to save review');
     }
   };
 
@@ -238,6 +243,16 @@ export default function RestaurantDetailPage() {
               }`}
           >
             Reviews ({reviews.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('map')}
+            className={`px-4 py-2 font-medium flex items-center gap-2 ${activeTab === 'map'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-600 hover:text-gray-900'
+              }`}
+          >
+            <MapPinIcon className="h-5 w-5" />
+            Map
           </button>
         </div>
 
@@ -387,6 +402,35 @@ export default function RestaurantDetailPage() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Map Tab */}
+        {activeTab === 'map' && (
+          <div>
+            <Card>
+              <div className="p-6">
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">Location</h3>
+                <div className="h-96 rounded-lg overflow-hidden">
+                  <RestaurantMap
+                    restaurants={[restaurant]}
+                    center={restaurant.location}
+                    height="100%"
+                  />
+                </div>
+                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">
+                    <span className="font-medium text-gray-900">Address:</span> {restaurant.address}
+                  </p>
+                  {restaurant.location && (
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium text-gray-900">Coordinates:</span>{' '}
+                      {restaurant.location.lat.toFixed(6)}, {restaurant.location.lng.toFixed(6)}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Card>
           </div>
         )}
       </div>

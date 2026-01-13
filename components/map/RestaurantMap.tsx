@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { Restaurant, Location } from '@/types';
 
 interface RestaurantMapProps {
@@ -10,32 +12,14 @@ interface RestaurantMapProps {
   height?: string;
 }
 
-// Minimal MapCN type definitions
-interface MapCNMap {
-  remove: () => void;
-}
-
-interface MapCNMarker {
-  setLngLat: (coordinates: [number, number]) => MapCNMarker;
-  addTo: (map: MapCNMap) => MapCNMarker;
-  setPopup: (popup: MapCNPopup) => MapCNMarker;
-  getElement: () => HTMLElement;
-}
-
-interface MapCNPopup {
-  setHTML: (html: string) => MapCNPopup;
-}
-
-interface MapCN {
-  Map: new (options: {
-    container: HTMLElement;
-    center: [number, number];
-    zoom: number;
-    style: string;
-  }) => MapCNMap;
-  Marker: new (options: { color: string }) => MapCNMarker;
-  Popup: new (options: { offset: number }) => MapCNPopup;
-}
+// Fix for default marker icon in Leaflet with Next.js
+// @ts-expect-error - Leaflet internal property that needs to be deleted for Next.js
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
 
 export default function RestaurantMap({
   restaurants,
@@ -44,86 +28,105 @@ export default function RestaurantMap({
   height = '400px',
 }: RestaurantMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<MapCNMap | null>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
 
   useEffect(() => {
     if (!mapRef.current) return;
 
-    // Initialize MapCN
-    const initMap = async () => {
-      try {
-        // MapCN script loading
-        if (!window.mapcn) {
-          const script = document.createElement('script');
-          script.src = 'https://api.mapcn.com/map/v1.0/map.js';
-          script.async = true;
-          document.head.appendChild(script);
+    // Clean up previous map instance
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
+    }
 
-          script.onload = () => {
-            createMap();
-          };
-        } else {
-          createMap();
-        }
-      } catch (error) {
-        console.error('Error loading MapCN:', error);
+    // Clear previous markers
+    markersRef.current.forEach((marker) => marker.remove());
+    markersRef.current = [];
+
+    const defaultCenter = center || { lat: 39.9042, lng: 116.4074 }; // Beijing default
+    const zoomLevel = restaurants.length === 1 ? 15 : 13;
+
+    // Initialize Leaflet map
+    const map = L.map(mapRef.current, {
+      center: [defaultCenter.lat, defaultCenter.lng],
+      zoom: zoomLevel,
+      zoomControl: true,
+    });
+
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19,
+    }).addTo(map);
+
+    mapInstanceRef.current = map;
+
+    // Add markers for each restaurant
+    restaurants.forEach((restaurant) => {
+      // Validate location data
+      if (!restaurant.location || typeof restaurant.location.lat !== 'number' || typeof restaurant.location.lng !== 'number') {
+        console.warn(`Restaurant ${restaurant.name} has invalid location data:`, restaurant.location);
+        return;
       }
-    };
 
-    const createMap = () => {
-      if (!mapRef.current || !window.mapcn) return;
-
-      const mapcn = window.mapcn; // Type guard
-      const defaultCenter = center || { lat: 39.9042, lng: 116.4074 }; // Beijing default
-
-      // Initialize MapCN map
-      const map = new mapcn.Map({
-        container: mapRef.current,
-        center: [defaultCenter.lng, defaultCenter.lat],
-        zoom: 13,
-        style: 'mapcn://styles/default',
+      // Create custom icon
+      const customIcon = L.icon({
+        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
       });
 
-      mapInstanceRef.current = map;
+      // Create marker
+      const marker = L.marker([restaurant.location.lat, restaurant.location.lng], {
+        icon: customIcon,
+      }).addTo(map);
 
-      // Add markers for each restaurant
-      restaurants.forEach((restaurant) => {
-        // Validate location data
-        if (!restaurant.location || typeof restaurant.location.lat !== 'number' || typeof restaurant.location.lng !== 'number') {
-          console.warn(`Restaurant ${restaurant.name} has invalid location data:`, restaurant.location);
-          return;
-        }
+      // Create popup content
+      const popupContent = `
+        <div style="padding: 8px; min-width: 150px;">
+          <h3 style="font-weight: 600; margin: 0 0 4px 0; font-size: 14px;">${restaurant.name}</h3>
+          <p style="margin: 0 0 4px 0; font-size: 12px; color: #666;">${restaurant.cuisineType}</p>
+          <p style="margin: 0; font-size: 12px;">${restaurant.rating.average.toFixed(1)} ⭐</p>
+        </div>
+      `;
 
-        const marker = new mapcn.Marker({
-          color: '#3B82F6',
-        })
-          .setLngLat([restaurant.location.lng, restaurant.location.lat])
-          .addTo(map);
+      marker.bindPopup(popupContent);
 
-        // Create popup
-        const popup = new mapcn.Popup({ offset: 25 }).setHTML(
-          `<div class="p-2">
-            <h3 class="font-semibold">${restaurant.name}</h3>
-            <p class="text-sm text-gray-600">${restaurant.cuisineType}</p>
-            <p class="text-sm">${restaurant.rating.average.toFixed(1)} ⭐</p>
-          </div>`
+      // Add click handler
+      if (onMarkerClick) {
+        marker.on('click', () => {
+          onMarkerClick(restaurant);
+        });
+      }
+
+      markersRef.current.push(marker);
+    });
+
+    // Fit bounds if multiple restaurants
+    if (restaurants.length > 1) {
+      const validRestaurants = restaurants.filter(
+        (r) => r.location && typeof r.location.lat === 'number' && typeof r.location.lng === 'number'
+      );
+      if (validRestaurants.length > 0) {
+        const bounds = L.latLngBounds(
+          validRestaurants.map((r) => [r.location.lat, r.location.lng] as [number, number])
         );
-
-        marker.setPopup(popup);
-
-        if (onMarkerClick) {
-          marker.getElement().addEventListener('click', () => {
-            onMarkerClick(restaurant);
-          });
-        }
-      });
-    };
-
-    initMap();
+        map.fitBounds(bounds, { padding: [50, 50] });
+      }
+    }
 
     return () => {
+      // Cleanup on unmount
+      markersRef.current.forEach((marker) => marker.remove());
+      markersRef.current = [];
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
       }
     };
   }, [restaurants, center, onMarkerClick]);
@@ -135,11 +138,4 @@ export default function RestaurantMap({
       className="rounded-lg overflow-hidden border border-gray-300"
     />
   );
-}
-
-// Extend Window interface for MapCN
-declare global {
-  interface Window {
-    mapcn?: MapCN;
-  }
 }

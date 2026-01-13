@@ -35,3 +35,8 @@ select option {
   color: #111827; /* text-gray-900 */
   background-color: #ffffff;
 }
+
+/* Leaflet map styles */
+.leaflet-container {
+  font-family: inherit;
+}
