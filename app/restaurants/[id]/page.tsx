@@ -23,13 +23,11 @@ import {
   StarIcon,
   HeartIcon,
   MapPinIcon,
-  PhoneIcon,
-  ClockIcon,
   UsersIcon,
-  CurrencyDollarIcon,
-  MapIcon,
+  BuildingStorefrontIcon,
+  ArrowLeftIcon,
 } from '@heroicons/react/24/solid';
-import { HeartIcon as HeartOutlineIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
 const reviewSchema = z.object({
   rating: z.number().min(1).max(5),
@@ -44,18 +42,27 @@ export default function RestaurantDetailPage() {
   const { isAuthenticated } = useAuthStore();
   const [activeTab, setActiveTab] = useState<'menu' | 'reviews'>('menu');
 
-  const { data: restaurantData, loading: restaurantLoading } = useQuery<{ getRestaurantById: Restaurant }>(GET_RESTAURANT_BY_ID, {
-    variables: { id: restaurantId },
-  });
+  const { data: restaurantData, loading: restaurantLoading, error: restaurantError } = useQuery<{ getRestaurantById: Restaurant }>(
+    GET_RESTAURANT_BY_ID,
+    {
+      variables: { id: restaurantId },
+      skip: !restaurantId,
+      fetchPolicy: 'cache-and-network',
+    }
+  );
 
   const { data: menuData, loading: menuLoading } = useQuery<{ getMenuByRestaurant: Menu[] }>(GET_MENU_BY_RESTAURANT, {
     variables: { restaurantId },
+    skip: !restaurantId,
+    fetchPolicy: 'cache-and-network',
   });
 
   const { data: reviewsData, loading: reviewsLoading, refetch: refetchReviews } = useQuery<{ getReviewsByRestaurant: Review[] }>(
     GET_REVIEWS_BY_RESTAURANT,
     {
       variables: { restaurantId, limit: 10 },
+      skip: !restaurantId,
+      fetchPolicy: 'cache-and-network',
     }
   );
 
@@ -127,14 +134,28 @@ export default function RestaurantDetailPage() {
     );
   }
 
-  if (!restaurant) {
+  if (restaurantError || (!restaurantLoading && !restaurant)) {
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center py-12">
-          <p className="text-gray-600">Restaurant not found</p>
+          <div className="mb-4">
+            <BuildingStorefrontIcon className="h-16 w-16 text-gray-400 mx-auto" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Restaurant Not Found</h2>
+          <p className="text-gray-600 mb-6">The restaurant you&apos;re looking for doesn&apos;t exist or has been removed.</p>
+          <Link href="/restaurants">
+            <Button variant="primary">
+              <ArrowLeftIcon className="h-5 w-5 mr-2" />
+              Back to Restaurants
+            </Button>
+          </Link>
         </div>
       </div>
     );
+  }
+
+  if (!restaurant) {
+    return null;
   }
 
   return (
