@@ -63,6 +63,17 @@ export default function AdminCrowdPage() {
   const restaurants = restaurantsData?.getRestaurants || [];
   const currentCrowd = crowdData?.getLiveCrowdData;
 
+  // Prepare restaurant options for dropdown
+  const restaurantOptions = [
+    { value: '', label: 'Select a restaurant...' },
+    ...restaurants
+      .filter((restaurant) => restaurant && restaurant.id && restaurant.name)
+      .map((restaurant) => ({
+        value: String(restaurant.id),
+        label: String(restaurant.name),
+      })),
+  ];
+
   const onSubmit = async (data: CrowdFormData) => {
     try {
       await updateCrowdData({
@@ -89,8 +100,8 @@ export default function AdminCrowdPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-8">Manage Crowd Data</h1>
 
           {/* Restaurant Selector */}
-          <Card className="mb-8">
-            <div className="p-6">
+          <Card className="mb-8 overflow-visible">
+            <div className="p-6 overflow-visible">
               {restaurantsError && (
                 <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                   <p className="text-red-800 text-sm mb-2">
@@ -118,15 +129,7 @@ export default function AdminCrowdPage() {
                     setSelectedRestaurant(value);
                     reset();
                   }}
-                  options={[
-                    { value: '', label: 'Select a restaurant...' },
-                    ...restaurants
-                      .filter((restaurant) => restaurant.id && restaurant.name)
-                      .map((restaurant) => ({
-                        value: restaurant.id,
-                        label: restaurant.name,
-                      })),
-                  ]}
+                  options={restaurantOptions}
                   placeholder="Select a restaurant..."
                 />
               ) : (
@@ -179,13 +182,14 @@ export default function AdminCrowdPage() {
               )}
 
               {/* Update Crowd Data Form */}
-              <Card>
-                <div className="p-6">
+              <Card className="overflow-visible">
+                <div className="p-6 overflow-visible">
                   <h2 className="text-xl font-semibold mb-4">Update Crowd Data</h2>
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <input type="hidden" {...register('restaurantId')} value={selectedRestaurant} />
                     <Input
                       label="Current Visitors"
+                      placeholder="Enter the number of current visitors"
                       type="number"
                       {...register('currentVisitors', { valueAsNumber: true })}
                       error={errors.currentVisitors?.message}

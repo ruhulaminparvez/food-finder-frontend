@@ -64,12 +64,25 @@ export default function AdminMenusPage() {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    setValue,
   } = useForm<MenuFormData>({
     resolver: zodResolver(menuSchema),
   });
 
   const restaurants = restaurantsData?.getRestaurants || [];
   const menuItems = menuData?.getMenuByRestaurant || [];
+
+  // Prepare restaurant options for dropdown
+  const restaurantOptions = [
+    { value: '', label: 'Select a restaurant...' },
+    ...restaurants
+      .filter((restaurant) => restaurant && restaurant.id && restaurant.name)
+      .map((restaurant) => ({
+        value: String(restaurant.id),
+        label: String(restaurant.name),
+      })),
+  ];
 
   const onSubmit = async (data: MenuFormData) => {
     try {
@@ -130,8 +143,8 @@ export default function AdminMenusPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-8">Manage Menu Items</h1>
 
           {/* Restaurant Selector */}
-          <Card className="mb-8">
-            <div className="p-6">
+          <Card className="mb-8 overflow-visible">
+            <div className="p-6 overflow-visible">
               {restaurantsError && (
                 <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
                   <p className="text-red-800 text-sm mb-2">
@@ -160,15 +173,7 @@ export default function AdminMenusPage() {
                     reset();
                     setEditingId(null);
                   }}
-                  options={[
-                    { value: '', label: 'Select a restaurant...' },
-                    ...restaurants
-                      .filter((restaurant) => restaurant.id && restaurant.name)
-                      .map((restaurant) => ({
-                        value: restaurant.id,
-                        label: restaurant.name,
-                      })),
-                  ]}
+                  options={restaurantOptions}
                   placeholder="Select a restaurant..."
                 />
               ) : (
@@ -188,20 +193,22 @@ export default function AdminMenusPage() {
           {selectedRestaurant && (
             <>
               {/* Menu Item Form */}
-              <Card className="mb-8">
-                <div className="p-6">
-                  <h2 className="text-xl font-semibold mb-4">
+              <Card className="mb-8 overflow-visible">
+                <div className="p-6 overflow-visible">
+                  <h2 className="text-xl font-semibold mb-4 text-gray-900">
                     {editingId ? 'Edit Menu Item' : 'Add Menu Item'}
                   </h2>
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <input type="hidden" {...register('restaurantId')} value={selectedRestaurant} />
                     <Input
                       label="Name"
+                      placeholder="Enter menu item name"
                       {...register('name')}
                       error={errors.name?.message}
                     />
                     <Input
                       label="Description (optional)"
+                      placeholder="Enter description"
                       {...register('description')}
                       error={errors.description?.message}
                     />
@@ -209,17 +216,35 @@ export default function AdminMenusPage() {
                       label="Price"
                       type="number"
                       step="0.01"
+                      placeholder="0.00"
                       {...register('price', { valueAsNumber: true })}
                       error={errors.price?.message}
                     />
-                    <Input
+                    <Select
                       label="Category"
-                      {...register('category')}
+                      value={watch('category') || ''}
+                      onChange={(value) => setValue('category', value, { shouldValidate: true })}
+                      options={[
+                        { value: 'Appetizers', label: 'Appetizers' },
+                        { value: 'Main Course', label: 'Main Course' },
+                        { value: 'Desserts', label: 'Desserts' },
+                        { value: 'Beverages', label: 'Beverages' },
+                        { value: 'Salads', label: 'Salads' },
+                        { value: 'Soups', label: 'Soups' },
+                        { value: 'Sides', label: 'Sides' },
+                        { value: 'Breakfast', label: 'Breakfast' },
+                        { value: 'Lunch', label: 'Lunch' },
+                        { value: 'Dinner', label: 'Dinner' },
+                        { value: 'Snacks', label: 'Snacks' },
+                        { value: 'Other', label: 'Other' },
+                      ]}
+                      placeholder="Select category"
                       error={errors.category?.message}
                     />
                     <Input
                       label="Image URL (optional)"
                       type="url"
+                      placeholder="https://example.com/image.jpg"
                       {...register('image')}
                       error={errors.image?.message}
                     />

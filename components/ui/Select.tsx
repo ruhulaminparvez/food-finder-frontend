@@ -37,7 +37,7 @@ export default function Select({
         </label>
       )}
       <Listbox value={value} onChange={onChange}>
-        <div className="relative">
+        <div className="relative z-10">
           <Listbox.Button
             className={`
               relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-sm
@@ -67,17 +67,19 @@ export default function Select({
           </Listbox.Button>
           <Transition
             as={Fragment}
+            enter="transition ease-out duration-100"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
             leave="transition ease-in duration-100"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
           >
-            <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-white ring-opacity-5 focus:outline-none">
+            <Listbox.Options className="absolute z-[9999] mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-white ring-opacity-5 focus:outline-none">
               {options.map((option) => (
                 <Listbox.Option
                   key={option.value}
                   className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                      active ? 'bg-blue-100 text-blue-900' : 'text-gray-900'
+                    `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-blue-100 text-blue-900' : 'text-gray-900'
                     }`
                   }
                   value={option.value}
@@ -85,9 +87,8 @@ export default function Select({
                   {({ selected }) => (
                     <>
                       <span
-                        className={`block truncate ${
-                          selected ? 'font-medium' : 'font-normal'
-                        }`}
+                        className={`block truncate ${selected ? 'font-medium' : 'font-normal'
+                          }`}
                       >
                         {option.label}
                       </span>
