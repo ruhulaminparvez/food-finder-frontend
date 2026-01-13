@@ -225,12 +225,10 @@ export default function RestaurantDetailPage() {
                 <UsersIcon className="h-4 w-4" />
                 {restaurant.crowdLevel} Crowd
               </span>
-              {restaurant.crowdData && (
-                <span className="text-sm text-gray-600 flex items-center gap-1">
-                  <UsersIcon className="h-4 w-4" />
-                  {restaurant.crowdData.currentVisitors} visitors
-                </span>
-              )}
+              <span className="text-sm text-gray-600 flex items-center gap-1">
+                <UsersIcon className="h-4 w-4" />
+                {restaurant.crowdData?.currentVisitors ?? 0} visitors
+              </span>
             </div>
             {isAuthenticated && (
               <Button
