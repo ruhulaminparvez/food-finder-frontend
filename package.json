@@ -9,9 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@apollo/client": "^4.0.12",
+    "@headlessui/react": "^2.2.9",
+    "@hookform/resolvers": "^5.2.2",
+    "framer-motion": "^12.26.2",
+    "graphql": "^16.12.0",
     "next": "16.1.1",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-hook-form": "^7.71.0",
+    "react-hot-toast": "^2.6.0",
+    "zod": "^4.3.5",
+    "zustand": "^5.0.10"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
