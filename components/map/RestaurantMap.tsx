@@ -88,6 +88,12 @@ export default function RestaurantMap({
 
       // Add markers for each restaurant
       restaurants.forEach((restaurant) => {
+        // Validate location data
+        if (!restaurant.location || typeof restaurant.location.lat !== 'number' || typeof restaurant.location.lng !== 'number') {
+          console.warn(`Restaurant ${restaurant.name} has invalid location data:`, restaurant.location);
+          return;
+        }
+
         const marker = new mapcn.Marker({
           color: '#3B82F6',
         })
