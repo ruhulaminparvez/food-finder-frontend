@@ -184,7 +184,7 @@ export default function Home() {
           <p className="text-xl mb-8 text-blue-100">
             Sign up to receive restaurant recommendations based on your preferences
           </p>
-          <Link href="/register">
+          <Link href="/dashboard">
             <Button variant="secondary" size="lg">
               Get Started
               <ArrowRightIcon className="h-5 w-5 ml-2" />

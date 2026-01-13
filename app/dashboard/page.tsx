@@ -12,14 +12,13 @@ import Button from '@/components/ui/Button';
 import {
   SparklesIcon,
   ArrowPathIcon,
-  StarIcon,
-  UsersIcon,
-  MapPinIcon,
 } from '@heroicons/react/24/solid';
 
 export default function DashboardPage() {
   const { data, loading, error, refetch } = useQuery<{ getUserRecommendations: RecommendationResult[] }>(GET_USER_RECOMMENDATIONS, {
     variables: { limit: 10 },
+    fetchPolicy: 'cache-and-network',
+    errorPolicy: 'all',
   });
 
   const recommendations: RecommendationResult[] = data?.getUserRecommendations || [];
@@ -58,9 +57,15 @@ export default function DashboardPage() {
               ))}
             </div>
           ) : error ? (
-            <div className="text-center py-12">
-              <p className="text-red-600">Error loading recommendations. Please try again.</p>
-            </div>
+            <Card>
+              <div className="p-12 text-center">
+                <p className="text-red-600 mb-4">Error loading recommendations: {error.message}</p>
+                <Button onClick={() => refetch()} variant="primary">
+                  <ArrowPathIcon className="h-5 w-5 mr-2" />
+                  Try Again
+                </Button>
+              </div>
+            </Card>
           ) : recommendations.length === 0 ? (
             <Card>
               <div className="p-12 text-center">
