@@ -31,9 +31,13 @@ export default function AdminMenusPage() {
   const [selectedRestaurant, setSelectedRestaurant] = useState<string>('');
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const { data: restaurantsData } = useQuery<{ getRestaurants: Restaurant[] }>(GET_RESTAURANTS, {
-    variables: { limit: 100 },
-  });
+  const { data: restaurantsData, loading: restaurantsLoading, error: restaurantsError } = useQuery<{ getRestaurants: Restaurant[] }>(
+    GET_RESTAURANTS,
+    {
+      variables: { limit: 100, offset: 0 },
+      fetchPolicy: 'cache-and-network',
+    }
+  );
 
   const { data: menuData, loading: menuLoading, refetch: refetchMenu } = useQuery<{ getMenuByRestaurant: Menu[] }>(
     GET_MENU_BY_RESTAURANT,
@@ -43,7 +47,9 @@ export default function AdminMenusPage() {
     }
   );
 
-  const [addMenuItem] = useMutation(ADD_MENU_ITEM);
+  const [addMenuItem] = useMutation(ADD_MENU_ITEM, {
+    refetchQueries: ['GetRestaurants'],
+  });
   const [updateMenuItem] = useMutation(UPDATE_MENU_ITEM);
   const [deleteMenuItem] = useMutation(DELETE_MENU_ITEM);
 
@@ -120,23 +126,39 @@ export default function AdminMenusPage() {
           {/* Restaurant Selector */}
           <Card className="mb-8">
             <div className="p-6">
-              <Select
-                label="Select Restaurant"
-                value={selectedRestaurant}
-                onChange={(value) => {
-                  setSelectedRestaurant(value);
-                  reset();
-                  setEditingId(null);
-                }}
-                options={[
-                  { value: '', label: 'Select a restaurant...' },
-                  ...restaurants.map((restaurant) => ({
-                    value: restaurant.id,
-                    label: restaurant.name,
-                  })),
-                ]}
-                placeholder="Select a restaurant..."
-              />
+              {restaurantsError && (
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-red-800 text-sm">
+                    Error loading restaurants: {restaurantsError.message}
+                  </p>
+                </div>
+              )}
+              {restaurantsLoading ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-600">Loading restaurants...</p>
+                </div>
+              ) : (
+                <Select
+                  label="Select Restaurant"
+                  value={selectedRestaurant}
+                  onChange={(value) => {
+                    setSelectedRestaurant(value);
+                    reset();
+                    setEditingId(null);
+                  }}
+                  options={[
+                    { value: '', label: 'Select a restaurant...' },
+                    ...restaurants.map((restaurant) => ({
+                      value: restaurant.id,
+                      label: restaurant.name,
+                    })),
+                  ]}
+                  placeholder="Select a restaurant..."
+                />
+              )}
+              {!restaurantsLoading && restaurants.length === 0 && !restaurantsError && (
+                <p className="mt-2 text-sm text-gray-500">No restaurants available. Please add restaurants first.</p>
+              )}
             </div>
           </Card>
 
