@@ -18,6 +18,7 @@ import {
   UsersIcon,
   ArrowRightIcon,
   BuildingStorefrontIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/solid';
 
 export default function Home() {
@@ -159,11 +160,10 @@ export default function Home() {
                           <BuildingStorefrontIcon className="h-4 w-4" />
                           {restaurant.cuisineType}
                         </span>
-                        <span className={`text-xs px-2 py-1 rounded flex items-center gap-1 ${
-                          restaurant.crowdLevel === 'LOW' ? 'bg-green-100 text-green-800' :
-                          restaurant.crowdLevel === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
-                        }`}>
+                        <span className={`text-xs px-2 py-1 rounded flex items-center gap-1 ${restaurant.crowdLevel === 'LOW' ? 'bg-green-100 text-green-800' :
+                            restaurant.crowdLevel === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-red-100 text-red-800'
+                          }`}>
                           <UsersIcon className="h-3 w-3" />
                           {restaurant.crowdLevel} Crowd
                         </span>
@@ -178,18 +178,81 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-blue-600 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Get Personalized Recommendations</h2>
-          <p className="text-xl mb-8 text-blue-100">
-            Sign up to receive restaurant recommendations based on your preferences
-          </p>
-          <Link href="/dashboard">
-            <Button variant="secondary" size="lg">
-              Get Started
-              <ArrowRightIcon className="h-5 w-5 ml-2" />
-            </Button>
-          </Link>
+      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
+          >
+            {/* Icon */}
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl mb-6 shadow-lg">
+              <SparklesIcon className="h-10 w-10 text-white" />
+            </div>
+
+            {/* Heading */}
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Get Personalized Recommendations
+            </h2>
+
+            {/* Description */}
+            <p className="text-xl md:text-2xl mb-10 text-gray-600 max-w-2xl mx-auto leading-relaxed">
+              Sign up to receive restaurant recommendations tailored to your taste preferences and location
+            </p>
+
+            {/* CTA Button */}
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-block"
+            >
+              <Link href="/dashboard">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="group shadow-lg hover:shadow-xl transition-all duration-300 px-8 py-4 text-lg font-semibold"
+                >
+                  <span className="flex items-center gap-2">
+                    Get Started
+                    <ArrowRightIcon className="h-6 w-6 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                </Button>
+              </Link>
+            </motion.div>
+
+            {/* Additional Features */}
+            <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
+              <Card className="hover:shadow-lg transition-shadow duration-300">
+                <div className="p-6 text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-4">
+                    <StarIcon className="h-8 w-8 text-yellow-600" />
+                  </div>
+                  <h3 className="text-gray-900 font-semibold mb-2">Top Rated</h3>
+                  <p className="text-gray-600 text-sm">Discover the highest rated restaurants</p>
+                </div>
+              </Card>
+              <Card className="hover:shadow-lg transition-shadow duration-300">
+                <div className="p-6 text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                    <MapPinIcon className="h-8 w-8 text-green-600" />
+                  </div>
+                  <h3 className="text-gray-900 font-semibold mb-2">Near You</h3>
+                  <p className="text-gray-600 text-sm">Find restaurants close to your location</p>
+                </div>
+              </Card>
+              <Card className="hover:shadow-lg transition-shadow duration-300">
+                <div className="p-6 text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
+                    <UsersIcon className="h-8 w-8 text-purple-600" />
+                  </div>
+                  <h3 className="text-gray-900 font-semibold mb-2">Crowd Levels</h3>
+                  <p className="text-gray-600 text-sm">Check real-time crowd information</p>
+                </div>
+              </Card>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>

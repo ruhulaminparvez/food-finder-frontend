@@ -58,7 +58,7 @@ export default function LoginPage() {
           <div className="p-8 sm:p-10">
             {/* Header */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4 shadow-lg">
                 <LockClosedIcon className="h-8 w-8 text-white" />
               </div>
               <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -130,9 +130,9 @@ export default function LoginPage() {
             {/* Footer */}
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Don't have an account?{' '}
-                <Link 
-                  href="/register" 
+                Don&apos;t have an account?{' '}
+                <Link
+                  href="/register"
                   className="font-semibold text-blue-600 hover:text-blue-700 transition-colors"
                 >
                   Create one now
