@@ -24,3 +24,14 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Ensure select and option elements have clear text color */
+select {
+  color: #111827; /* text-gray-900 */
+  background-color: #ffffff;
+}
+
+select option {
+  color: #111827; /* text-gray-900 */
+  background-color: #ffffff;
+}

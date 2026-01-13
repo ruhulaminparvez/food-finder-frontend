@@ -9,6 +9,7 @@ import ProtectedRoute from '@/components/common/ProtectedRoute';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Select from '@/components/ui/Select';
 import { toast } from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -119,25 +120,23 @@ export default function AdminMenusPage() {
           {/* Restaurant Selector */}
           <Card className="mb-8">
             <div className="p-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Restaurant
-              </label>
-              <select
+              <Select
+                label="Select Restaurant"
                 value={selectedRestaurant}
-                onChange={(e) => {
-                  setSelectedRestaurant(e.target.value);
+                onChange={(value) => {
+                  setSelectedRestaurant(value);
                   reset();
                   setEditingId(null);
                 }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select a restaurant...</option>
-                {restaurants.map((restaurant) => (
-                  <option key={restaurant.id} value={restaurant.id}>
-                    {restaurant.name}
-                  </option>
-                ))}
-              </select>
+                options={[
+                  { value: '', label: 'Select a restaurant...' },
+                  ...restaurants.map((restaurant) => ({
+                    value: restaurant.id,
+                    label: restaurant.name,
+                  })),
+                ]}
+                placeholder="Select a restaurant..."
+              />
             </div>
           </Card>
 

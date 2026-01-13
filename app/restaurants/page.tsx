@@ -7,6 +7,7 @@ import { GET_RESTAURANTS, SEARCH_RESTAURANTS } from '@/graphql/queries/restauran
 import Card from '@/components/ui/Card';
 import Skeleton from '@/components/ui/Skeleton';
 import Button from '@/components/ui/Button';
+import Select from '@/components/ui/Select';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Restaurant, RestaurantFilter, CrowdLevel } from '@/types';
@@ -53,7 +54,7 @@ export default function RestaurantsPage() {
               placeholder="Search restaurants..."
               value={searchKeyword}
               onChange={(e) => setSearchKeyword(e.target.value)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <Button
               onClick={() => refetch()}
@@ -65,36 +66,36 @@ export default function RestaurantsPage() {
 
           {/* Filters */}
           <div className="flex flex-wrap gap-4 mb-6">
-            <select
+            <Select
               value={filters.cuisine || ''}
-              onChange={(e) => handleFilterChange('cuisine', e.target.value || undefined)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Cuisines</option>
-              {CUISINE_TYPES.map((cuisine) => (
-                <option key={cuisine} value={cuisine}>
-                  {cuisine}
-                </option>
-              ))}
-            </select>
+              onChange={(value) => handleFilterChange('cuisine', value || undefined)}
+              options={[
+                { value: '', label: 'All Cuisines' },
+                ...CUISINE_TYPES.map((cuisine) => ({ value: cuisine, label: cuisine })),
+              ]}
+              placeholder="All Cuisines"
+              className="min-w-[180px]"
+            />
 
-            <select
+            <Select
               value={filters.crowdLevel || ''}
-              onChange={(e) => handleFilterChange('crowdLevel', e.target.value || undefined)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Crowd Levels</option>
-              <option value="LOW">Low</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="HIGH">High</option>
-            </select>
+              onChange={(value) => handleFilterChange('crowdLevel', value || undefined)}
+              options={[
+                { value: '', label: 'All Crowd Levels' },
+                { value: 'LOW', label: 'Low' },
+                { value: 'MEDIUM', label: 'Medium' },
+                { value: 'HIGH', label: 'High' },
+              ]}
+              placeholder="All Crowd Levels"
+              className="min-w-[180px]"
+            />
 
             <input
               type="number"
               placeholder="Min Rating"
               value={filters.minRating || ''}
               onChange={(e) => handleFilterChange('minRating', e.target.value ? parseFloat(e.target.value) : undefined)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-32"
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-32"
             />
 
             <div className="flex gap-2 ml-auto">

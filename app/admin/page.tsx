@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/common/ProtectedRoute';
 import Card from '@/components/ui/Card';
 import Skeleton from '@/components/ui/Skeleton';
 import Link from 'next/link';
+import Image from 'next/image';
 import { RestaurantStats, Analytics, CrowdTrend } from '@/types';
 
 export default function AdminDashboardPage() {
@@ -121,10 +122,12 @@ export default function AdminDashboardPage() {
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <div className="flex items-center">
                                   {stat.restaurant.images[0] && (
-                                    <img
+                                    <Image
                                       src={stat.restaurant.images[0]}
                                       alt={stat.restaurant.name}
-                                      className="h-10 w-10 rounded-full mr-3"
+                                      width={40}
+                                      height={40}
+                                      className="rounded-full mr-3 object-cover"
                                     />
                                   )}
                                   <div>

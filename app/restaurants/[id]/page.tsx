@@ -11,6 +11,7 @@ import { useAuthStore } from '@/store/auth-store';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Select from '@/components/ui/Select';
 import Skeleton from '@/components/ui/Skeleton';
 import { toast } from 'react-hot-toast';
 import { useState } from 'react';
@@ -55,6 +56,8 @@ export default function RestaurantDetailPage() {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    setValue,
   } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
   });
@@ -269,21 +272,20 @@ export default function RestaurantDetailPage() {
                 <div className="p-6">
                   <h3 className="text-lg font-semibold mb-4">Write a Review</h3>
                   <form onSubmit={handleSubmit(onSubmitReview)} className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Rating
-                      </label>
-                      <select
-                        {...register('rating', { valueAsNumber: true })}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value={5}>5 - Excellent</option>
-                        <option value={4}>4 - Very Good</option>
-                        <option value={3}>3 - Good</option>
-                        <option value={2}>2 - Fair</option>
-                        <option value={1}>1 - Poor</option>
-                      </select>
-                    </div>
+                    <Select
+                      label="Rating"
+                      value={watch('rating')?.toString() || ''}
+                      onChange={(value) => setValue('rating', parseInt(value), { shouldValidate: true })}
+                      options={[
+                        { value: '5', label: '5 - Excellent' },
+                        { value: '4', label: '4 - Very Good' },
+                        { value: '3', label: '3 - Good' },
+                        { value: '2', label: '2 - Fair' },
+                        { value: '1', label: '1 - Poor' },
+                      ]}
+                      placeholder="Select rating"
+                      error={errors.rating?.message}
+                    />
                     <Input
                       label="Comment (optional)"
                       {...register('comment')}
