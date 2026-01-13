@@ -8,11 +8,14 @@ import ProtectedRoute from '@/components/common/ProtectedRoute';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Select from '@/components/ui/Select';
 import { toast } from 'react-hot-toast';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { CreateRestaurantInput, Restaurant } from '@/types';
+
+const CUISINE_TYPES = ['Italian', 'Chinese', 'Japanese', 'Mexican', 'Indian', 'American', 'Thai', 'French'];
 
 const restaurantSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -42,6 +45,8 @@ export default function AdminRestaurantsPage() {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    setValue,
   } = useForm<RestaurantFormData>({
     resolver: zodResolver(restaurantSchema),
     defaultValues: {
@@ -133,27 +138,36 @@ export default function AdminRestaurantsPage() {
           {(isCreating || editingId) && (
             <Card className="mb-8">
               <div className="p-6">
-                <h2 className="text-xl font-semibold mb-4">
+                <h2 className="text-xl font-semibold mb-4 text-gray-900">
                   {editingId ? 'Edit Restaurant' : 'Create Restaurant'}
                 </h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                   <Input
                     label="Name"
+                    placeholder="e.g., The Italian Bistro"
                     {...register('name')}
                     error={errors.name?.message}
                   />
                   <Input
                     label="Description"
+                    placeholder="Enter a detailed description of the restaurant..."
                     {...register('description')}
                     error={errors.description?.message}
                   />
-                  <Input
+                  <Select
                     label="Cuisine Type"
-                    {...register('cuisineType')}
+                    value={watch('cuisineType') || ''}
+                    onChange={(value) => setValue('cuisineType', value, { shouldValidate: true })}
+                    options={CUISINE_TYPES.map((cuisine) => ({
+                      value: cuisine,
+                      label: cuisine,
+                    }))}
+                    placeholder="Select cuisine type"
                     error={errors.cuisineType?.message}
                   />
                   <Input
                     label="Address"
+                    placeholder="e.g., 123 Main Street, City, State"
                     {...register('address')}
                     error={errors.address?.message}
                   />
@@ -162,6 +176,7 @@ export default function AdminRestaurantsPage() {
                       label="Latitude"
                       type="number"
                       step="any"
+                      placeholder="e.g., 40.7128"
                       {...register('lat', { valueAsNumber: true })}
                       error={errors.lat?.message}
                     />
@@ -169,6 +184,7 @@ export default function AdminRestaurantsPage() {
                       label="Longitude"
                       type="number"
                       step="any"
+                      placeholder="e.g., -74.0060"
                       {...register('lng', { valueAsNumber: true })}
                       error={errors.lng?.message}
                     />
