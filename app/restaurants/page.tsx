@@ -15,8 +15,6 @@ import {
   MagnifyingGlassIcon,
   StarIcon,
   UsersIcon,
-  Squares2X2Icon,
-  ListBulletIcon,
   MapPinIcon,
 } from '@heroicons/react/24/solid';
 
@@ -24,7 +22,6 @@ const CUISINE_TYPES = ['Italian', 'Chinese', 'Japanese', 'Mexican', 'Indian', 'A
 
 export default function RestaurantsPage() {
   const searchParams = useSearchParams();
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [filters, setFilters] = useState<RestaurantFilter>({
     cuisine: searchParams.get('cuisine') || undefined,
   });
@@ -36,6 +33,7 @@ export default function RestaurantsPage() {
       variables: searchKeyword
         ? { keyword: searchKeyword, limit: 20 }
         : { filter: filters, limit: 20 },
+      fetchPolicy: 'cache-and-network',
     }
   );
 
@@ -54,7 +52,7 @@ export default function RestaurantsPage() {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Restaurants</h1>
-          
+
           {/* Search Bar */}
           <div className="flex gap-4 mb-6">
             <div className="flex-1 relative">
@@ -112,30 +110,11 @@ export default function RestaurantsPage() {
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-32"
               />
             </div>
-
-            <div className="flex gap-2 ml-auto">
-              <Button
-                variant={viewMode === 'grid' ? 'primary' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('grid')}
-              >
-                <Squares2X2Icon className="h-4 w-4 mr-1" />
-                Grid
-              </Button>
-              <Button
-                variant={viewMode === 'list' ? 'primary' : 'outline'}
-                size="sm"
-                onClick={() => setViewMode('list')}
-              >
-                <ListBulletIcon className="h-4 w-4 mr-1" />
-                List
-              </Button>
-            </div>
           </div>
         </div>
 
         {loading ? (
-          <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <Card key={i}>
                 <Skeleton variant="rectangular" className="h-48 w-full" />
@@ -156,11 +135,11 @@ export default function RestaurantsPage() {
             <p className="text-gray-600">No restaurants found.</p>
           </div>
         ) : (
-          <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {restaurants.map((restaurant) => (
               <Link key={restaurant.id} href={`/restaurants/${restaurant.id}`}>
-                <Card hover className={viewMode === 'list' ? 'flex' : ''}>
-                  <div className={`relative ${viewMode === 'list' ? 'w-48 h-48 shrink-0' : 'h-48'} overflow-hidden`}>
+                <Card hover>
+                  <div className="relative h-48 overflow-hidden">
                     <Image
                       src={restaurant.images[0] || '/placeholder-restaurant.jpg'}
                       alt={restaurant.name}
@@ -172,11 +151,11 @@ export default function RestaurantsPage() {
                       {restaurant.rating.average.toFixed(1)}
                     </div>
                   </div>
-                  <div className="p-4 flex-1">
+                  <div className="p-4">
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">
                       {restaurant.name}
                     </h3>
-                    <p className={`text-gray-600 text-sm mb-2 ${viewMode === 'list' ? '' : 'line-clamp-2'}`}>
+                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">
                       {restaurant.description}
                     </p>
                     <div className="flex items-center justify-between mt-4">
@@ -184,11 +163,10 @@ export default function RestaurantsPage() {
                         <MapPinIcon className="h-4 w-4" />
                         {restaurant.cuisineType}
                       </span>
-                      <span className={`text-xs px-2 py-1 rounded flex items-center gap-1 ${
-                        restaurant.crowdLevel === 'LOW' ? 'bg-green-100 text-green-800' :
-                        restaurant.crowdLevel === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
+                      <span className={`text-xs px-2 py-1 rounded flex items-center gap-1 ${restaurant.crowdLevel === 'LOW' ? 'bg-green-100 text-green-800' :
+                          restaurant.crowdLevel === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                        }`}>
                         <UsersIcon className="h-3 w-3" />
                         {restaurant.crowdLevel} Crowd
                       </span>

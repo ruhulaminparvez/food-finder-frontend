@@ -27,6 +27,7 @@ export default function Home() {
 
   const { data, loading, error } = useQuery<{ getRestaurants: Restaurant[] }>(GET_RESTAURANTS, {
     variables: { limit: 6 },
+    fetchPolicy: 'cache-and-network',
   });
 
   const handleSearch = (e: React.FormEvent) => {

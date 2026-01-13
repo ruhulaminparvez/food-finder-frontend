@@ -14,12 +14,12 @@ import {
   UsersIcon,
   StarIcon,
   ChartBarIcon,
-  ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
 } from '@heroicons/react/24/solid';
 
 export default function AdminDashboardPage() {
-  const { data, loading, error } = useQuery<{ getAnalytics: Analytics }>(GET_ANALYTICS);
+  const { data, loading, error } = useQuery<{ getAnalytics: Analytics }>(GET_ANALYTICS, {
+    fetchPolicy: 'cache-and-network',
+  });
 
   const analytics = data?.getAnalytics;
 

@@ -14,6 +14,7 @@ export default function MapViewPage() {
 
   const { data, loading } = useQuery<{ getRestaurants: Restaurant[] }>(GET_RESTAURANTS, {
     variables: { limit: 50 },
+    fetchPolicy: 'cache-and-network',
   });
 
   const restaurants: Restaurant[] = data?.getRestaurants || [];

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { GET_RESTAURANTS } from '@/graphql/queries/restaurants';
+import { GET_ANALYTICS } from '@/graphql/queries/analytics';
 import { CREATE_RESTAURANT, UPDATE_RESTAURANT, DELETE_RESTAURANT } from '@/graphql/mutations/restaurant';
 import ProtectedRoute from '@/components/common/ProtectedRoute';
 import Card from '@/components/ui/Card';
@@ -38,9 +39,31 @@ export default function AdminRestaurantsPage() {
     variables: { limit: 50 },
   });
 
-  const [createRestaurant] = useMutation(CREATE_RESTAURANT);
-  const [updateRestaurant] = useMutation(UPDATE_RESTAURANT);
-  const [deleteRestaurant] = useMutation(DELETE_RESTAURANT);
+  const [createRestaurant] = useMutation(CREATE_RESTAURANT, {
+    refetchQueries: [
+      'GetRestaurants', // Refetch all instances of GET_RESTAURANTS regardless of variables
+      'GetAnalytics',
+      'SearchRestaurants',
+    ],
+    awaitRefetchQueries: true,
+  });
+  const [updateRestaurant] = useMutation(UPDATE_RESTAURANT, {
+    refetchQueries: [
+      'GetRestaurants',
+      'GetAnalytics',
+      'SearchRestaurants',
+      'GetRestaurantById', // Refetch individual restaurant queries
+    ],
+    awaitRefetchQueries: true,
+  });
+  const [deleteRestaurant] = useMutation(DELETE_RESTAURANT, {
+    refetchQueries: [
+      'GetRestaurants',
+      'GetAnalytics',
+      'SearchRestaurants',
+    ],
+    awaitRefetchQueries: true,
+  });
 
   const {
     register,
@@ -102,7 +125,7 @@ export default function AdminRestaurantsPage() {
       reset();
       setIsCreating(false);
       setEditingId(null);
-      refetch();
+      // refetchQueries in mutation options will handle the refetch automatically
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to save restaurant');
     }
@@ -114,7 +137,7 @@ export default function AdminRestaurantsPage() {
     try {
       await deleteRestaurant({ variables: { id } });
       toast.success('Restaurant deleted!');
-      refetch();
+      // refetchQueries in mutation options will handle the refetch automatically
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to delete restaurant');
     }
