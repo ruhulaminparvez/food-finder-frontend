@@ -15,6 +15,7 @@ import {
   ArrowLeftOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
+  HomeModernIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Navbar() {
@@ -67,7 +68,7 @@ export default function Navbar() {
                   href="/restaurants"
                   className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2"
                 >
-                  <BuildingStorefrontIcon className="h-5 w-5" />
+                  <HomeModernIcon className="h-5 w-5" />
                   Restaurants
                 </Link>
                 {isAuthenticated && (
@@ -189,7 +190,7 @@ export default function Navbar() {
                 className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <BuildingStorefrontIcon className="h-5 w-5" />
+                <HomeModernIcon className="h-5 w-5" />
                 <span className="font-medium">Restaurants</span>
               </Link>
 
