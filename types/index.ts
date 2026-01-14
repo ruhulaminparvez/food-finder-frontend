@@ -146,12 +146,32 @@ export interface CrowdTrend {
   lastUpdated: string;
 }
 
+export interface OrderStatusCount {
+  pending: number;
+  confirmed: number;
+  preparing: number;
+  ready: number;
+  completed: number;
+  cancelled: number;
+}
+
+export interface OrderDateStat {
+  date: string;
+  count: number;
+  revenue: number;
+}
+
 export interface Analytics {
   totalRestaurants: number;
   totalUsers: number;
   mostVisitedRestaurants: RestaurantStats[];
   averageRatings: number;
   crowdTrends: CrowdTrend[];
+  totalOrders: number;
+  ordersByStatus: OrderStatusCount;
+  totalRevenue: number;
+  ordersByDate: OrderDateStat[];
+  recentOrders: Order[];
 }
 
 // Form Types
