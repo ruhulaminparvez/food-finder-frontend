@@ -20,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} antialiased flex flex-col min-h-screen`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} antialiased flex flex-col min-h-screen`} suppressHydrationWarning>
         <ApolloWrapper>
           <AuthInitializer />
           <Navbar />
