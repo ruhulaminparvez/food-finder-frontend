@@ -10,6 +10,15 @@ export enum CrowdLevel {
   HIGH = 'HIGH',
 }
 
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  CONFIRMED = 'CONFIRMED',
+  PREPARING = 'PREPARING',
+  READY = 'READY',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+
 export interface Location {
   lat: number;
   lng: number;
@@ -181,4 +190,55 @@ export interface CreateReviewInput {
   restaurantId: string;
   rating: number;
   comment?: string;
+}
+
+export interface CartItem {
+  menuItemId: string;
+  menuItem?: Menu;
+  quantity: number;
+  price: number;
+  name: string;
+}
+
+export interface Cart {
+  id: string;
+  userId: string;
+  user?: User;
+  restaurantId: string;
+  restaurant?: Restaurant;
+  items: CartItem[];
+  totalAmount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderItem {
+  menuItemId: string;
+  menuItem?: Menu;
+  quantity: number;
+  price: number;
+  name: string;
+}
+
+export interface Order {
+  id: string;
+  userId: string;
+  user?: User;
+  restaurantId: string;
+  restaurant?: Restaurant;
+  items: OrderItem[];
+  totalAmount: number;
+  status: OrderStatus;
+  deliveryAddress?: string;
+  deliveryLocation?: Location;
+  specialInstructions?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateOrderInput {
+  restaurantId: string;
+  deliveryAddress?: string;
+  deliveryLocation?: Location;
+  specialInstructions?: string;
 }
