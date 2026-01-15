@@ -1,7 +1,7 @@
 'use client';
 
 import { useSearchParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useQuery, useMutation, useApolloClient } from '@apollo/client/react';
 import { GET_CART } from '@/graphql/queries/cart';
 import { CREATE_ORDER } from '@/graphql/mutations/order';
@@ -35,7 +35,7 @@ const checkoutSchema = z.object({
 
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const apolloClient = useApolloClient();
@@ -402,5 +402,37 @@ export default function CheckoutPage() {
         </div>
       </div>
     </ProtectedRoute>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <Card>
+              <div className="p-6">
+                <Skeleton variant="text" className="h-8 w-1/4 mb-4" />
+                <div className="space-y-4">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="flex gap-4">
+                      <Skeleton variant="rectangular" className="h-20 w-20 rounded" />
+                      <div className="flex-1">
+                        <Skeleton variant="text" className="h-5 w-3/4 mb-2" />
+                        <Skeleton variant="text" className="h-4 w-full mb-2" />
+                        <Skeleton variant="text" className="h-4 w-1/2" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      }
+    >
+      <CheckoutContent />
+    </Suspense>
   );
 }

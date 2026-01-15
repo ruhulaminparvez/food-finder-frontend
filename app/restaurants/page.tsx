@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@apollo/client/react';
 import { GET_RESTAURANTS, SEARCH_RESTAURANTS } from '@/graphql/queries/restaurants';
@@ -20,7 +20,7 @@ import {
 
 const CUISINE_TYPES = ['Italian', 'Chinese', 'Japanese', 'Mexican', 'Indian', 'American', 'Thai', 'French'];
 
-export default function RestaurantsPage() {
+function RestaurantsContent() {
   const searchParams = useSearchParams();
   const [filters, setFilters] = useState<RestaurantFilter>({
     cuisine: searchParams.get('cuisine') || undefined,
@@ -179,5 +179,44 @@ export default function RestaurantsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function RestaurantsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-8">
+              <Skeleton variant="text" className="h-9 w-48 mb-4" />
+              <div className="flex gap-4 mb-6">
+                <Skeleton variant="rectangular" className="h-10 flex-1" />
+                <Skeleton variant="rectangular" className="h-10 w-24" />
+              </div>
+              <div className="flex flex-wrap gap-4 mb-6">
+                <Skeleton variant="rectangular" className="h-10 w-48" />
+                <Skeleton variant="rectangular" className="h-10 w-48" />
+                <Skeleton variant="rectangular" className="h-10 w-32" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <Card key={i}>
+                  <Skeleton variant="rectangular" className="h-48 w-full" />
+                  <div className="p-4">
+                    <Skeleton variant="text" className="h-6 w-3/4 mb-2" />
+                    <Skeleton variant="text" className="h-4 w-full mb-2" />
+                    <Skeleton variant="text" className="h-4 w-2/3" />
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <RestaurantsContent />
+    </Suspense>
   );
 }
